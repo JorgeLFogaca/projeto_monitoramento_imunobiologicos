@@ -1,0 +1,34 @@
+main {
+    display: flex;
+    min-height: calc(100vh - 80px);
+    height: auto;
+}
+
+#sensores {
+    flex: 2;
+    padding: 1.5rem;
+    color: var(--font-color-primary);
+    background-color: var(--brand-color-terciary);
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+    align-content: start;
+    gap: 1rem;
+
+    min-width: 0;
+    overflow: visible;
+}
+
+#detalhes{
+    background: rgb(96, 201, 201);
+    padding: 1rem;
+}
+
+#detalhes h2{
+    margin-bottom:5px;
+    color: var(--brand-color-terciary);
+}
+
+#detalhes h3{
+    color: var(--font-color-primary);
+}

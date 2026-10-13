@@ -1,5 +1,43 @@
-header .container {
+.container {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    width: 100%;
+    background-color: var(--brand-color-primary);
+    padding: 0.1rem 0;
+    box-sizing: border-box;
+}
+
+.logo {
+    position: relative;
+    margin-right: auto;
+    padding: 0.2rem;
+}
+
+.logo img {
+    max-height: 80px;
+}
+
+.titulo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
+}
+
+#titulo1{
+    max-width: 340px;
+    max-height: 100px;
+}
+
+@media (max-width: 576px) {
+    .logo {
+        display: none;
+    }
+}
+
+.menu{
+    padding: 1.25rem;
 }

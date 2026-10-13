@@ -10,7 +10,8 @@
 
     /* Identidade visual */
     --brand-color-primary: #176B87;
-    --brand-color-secondary: #19A7A0;
+    --brand-color-secondary: #b6e3f5;
+    --brand-color-terciary: #03465c;
     --ff-sans: 'Inter', system-ui, sans-serif;
     --fw-base: 400;
     --fw-md: 500;
@@ -29,15 +30,16 @@
 }
 
 body{
-    background: black;
+    background: white;
     color: var(--stroke-color);
     font-family: var(--ff-sans);
     font-size: var(--fs-2xl);
+    margin: 0;
 }
 
 h1,h2,h3 {
     line-height: 1.2;
-    color: var(--text-color-primary);
+    color: var(--bg-color);
     font-weight: var(--fw-bold);
     letter-spacing: -0.04rem;
 }

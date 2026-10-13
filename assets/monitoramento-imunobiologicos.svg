@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="220" viewBox="0 0 1200 220" role="img" aria-labelledby="title desc">
+  <title id="title">Monitoramento Imunobiológicos</title>
+  <desc id="desc">Título estilizado em azul com ícone de floco de neve e termômetro mais próximos das letras.</desc>
+  <defs>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffff"/>
+      <stop offset="100%" stop-color="#ffff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#blue)" stroke-width="4" stroke-linecap="round">
+    <path d="M40 63 H145"/>
+    <path d="M1055 63 H1160"/>
+  </g>
+  <!-- Grupo de ícones deslocado para a esquerda (aproximando das letras) -->
+  <g transform="translate(930 25)" fill="none" stroke="#ffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M25 4 V40"/>
+    <path d="M9 13 L41 31 M41 13 L9 31"/>
+    <path d="M25 4 L20 10 M25 4 L30 10 M25 40 L20 34 M25 40 L30 34"/>
+    <path d="M58 7 V36 A13 13 0 1 1 42 36 V7 A8 8 0 0 1 58 7 Z"/>
+    <path d="M50 22 V43"/>
+  </g>
+  <text x="600" y="78" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="600" letter-spacing="3" fill="#ffff">MONITORAMENTO</text>
+  <text x="600" y="157" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="59" font-weight="800" letter-spacing="1.2" fill="url(#blue)">IMUNOBIOLÓGICOS</text>
+  <path d="M330 181 H870" stroke="#ffff" stroke-width="4" stroke-linecap="round"/>
+</svg>
