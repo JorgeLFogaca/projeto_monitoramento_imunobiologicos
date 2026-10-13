@@ -81,7 +81,6 @@ Alerta: ${payloadJson.alerta}
     }
 
     const payload = {
-
         sensorId,
         tipoDado,
         mensagem: msgStr,
