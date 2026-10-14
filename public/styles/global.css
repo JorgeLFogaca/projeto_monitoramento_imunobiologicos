@@ -9,6 +9,9 @@
     --text-color-secondary: #64748B;
 
     /* Identidade visual */
+    --ok-state-color: #22c55e;
+    --danger-state-color: #ef4444;
+    --offline-state-color: #f59e0b;
     --brand-color-primary: #176B87;
     --brand-color-secondary: #b6e3f5;
     --brand-color-terciary: #03465c;

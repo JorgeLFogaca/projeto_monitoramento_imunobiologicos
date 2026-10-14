@@ -1,23 +1,12 @@
 const socket = io();
-socket.on('connect', () => {
-    console.log('Socket conectado:', socket.id);
-});
-
-socket.on('connect_error', (erro) => {
-    console.error('Erro Socket.IO:', erro.message);
-});
-
-socket.on('mqttData', (data) => {
-    console.log('Frontend recebeu:', data);
-});
 
 const container = document.getElementById('sensores');
 const detalheBox = document.getElementById('conteudoDetalhes');
 
 const sensores = {};
 
+// Recebe dados do MQTT pelo servidor
 socket.on('mqttData', (data) => {
-
     const id = data.sensorId;
 
     if (!sensores[id]) {
@@ -28,91 +17,98 @@ socket.on('mqttData', (data) => {
 
     let payload = data.mensagem;
 
-    // se vier OFFLINE
-
+    // Trata mensagens de status
     if (payload === 'OFFLINE' || payload === 'ONLINE') {
-
         const status = payload;
 
         payload = {
-            ...sensores[id]?.payload,
-            status: status,
+            ...sensores[id].payload,
+            status,
             alerta: status === 'OFFLINE'
                 ? 'SENSOR OFFLINE'
-                : (sensores[id]?.payload?.alerta || 'NORMAL')
+                : (sensores[id].payload?.alerta || 'NORMAL')
         };
 
     } else {
-
-        // Tenta converter JSON
+        // Converte mensagens JSON
         if (typeof payload === 'string') {
             try {
                 payload = JSON.parse(payload);
             } catch (e) {
-                console.log("JSON inválido:", payload);
+                console.log('JSON inválido:', payload);
                 return;
             }
         }
 
-        // Garante status online
         payload.status = 'ONLINE';
     }
 
-
+    // Atualiza os dados atuais do sensor
     sensores[id].sensorId = id;
     sensores[id].payload = payload;
     sensores[id].horario = data.horario;
     sensores[id].data = data.data;
 
-    sensores[id].historico.unshift({
-        payload: payload,
-        horario: data.horario,
-        data: data.data
-    });
+    // Guarda no histórico apenas as leituras de temperatura
+    if (data.tipoDado === 'temp') {
+        sensores[id].historico.unshift({
+            payload: { ...payload },
+            horario: data.horario,
+            data: data.data
+        });
+
+        // Limita o histórico a 10 registros
+        sensores[id].historico =
+            sensores[id].historico.slice(0, 10);
+    }
 
     renderizarSensores();
+
+    // Atualiza os detalhes se o sensor estiver selecionado
+    if (detalheBox.dataset.sensorId === id) {
+        mostrarDetalhes(id);
+    }
 });
 
-function renderizarSensores() {
 
+// Define a classe CSS conforme o estado do sensor
+function obterClasseEstado(payload) {
+    if (payload?.status === 'OFFLINE') {
+        return 'offline';
+    }
+
+    if (
+        payload?.alerta &&
+        payload.alerta !== 'NORMAL'
+    ) {
+        return 'alerta';
+    }
+
+    return '';
+}
+
+
+// Renderiza os cards dos sensores
+function renderizarSensores() {
     container.innerHTML = '';
 
     Object.values(sensores).forEach(sensor => {
-
         const card = document.createElement('div');
-
-        let classe = 'card';
-
         const payload = sensor.payload;
 
-        if (payload?.status === 'OFFLINE') {
-            classe += ' offline';
-        }
+        const estado = obterClasseEstado(payload);
 
-        if (payload?.alerta !== 'NORMAL') {
-            classe += ' alerta';
-        }
-
-        card.className = classe;
+        card.className = `card ${estado}`.trim();
 
         const nomeFormatado = sensor.sensorId
             .replace(/_/g, ' ')
             .toUpperCase();
 
         card.innerHTML = `
-                <h2>📍 ${nomeFormatado}</h2>
-
-                <div>
-                    <p>📍 Local: ${payload?.local || 'N/A'}</p>
-                    <p>🌡️ Temperatura: ${payload?.temp ?? '--'}°C</p>
-                    <p>📢 Alerta: ${payload?.alerta || 'N/A'}</p>
-                </div>
-
-                <p class="status">
-                    🕒 ${sensor.horario}
-                    📅 ${sensor.data}
-                </p>
-            `;
+            <div>
+                <h2>📍 Local: ${payload?.local || 'N/A'}</h2>
+            </div>
+        `;
 
         card.onclick = () => mostrarDetalhes(sensor.sensorId);
 
@@ -120,33 +116,57 @@ function renderizarSensores() {
     });
 }
 
-function mostrarDetalhes(id) {
 
+// Exibe o histórico do sensor selecionado
+function mostrarDetalhes(id) {
     const sensor = sensores[id];
+
+    if (!sensor) return;
 
     const nomeFormatado = id
         .replace(/_/g, ' ')
         .toUpperCase();
 
+    // Registra qual sensor está sendo visualizado
+    detalheBox.dataset.sensorId = id;
+
     let historicoHtml = '';
 
-    sensor.historico.slice(0, 10).forEach(item => {
+    sensor.historico.forEach(item => {
+        const payload = item.payload;
+        const estado = obterClasseEstado(payload);
+        const classe = `detalhe-box ${estado}`.trim();
 
         historicoHtml += `
-                <div class="detalhe-box">
-                    <p>📍 ${item.payload?.local || 'N/A'}</p>
-                    <p>🌡️ ${item.payload?.temp ?? '--'}°C</p>
-                    <p>📢 ${item.payload?.alerta || 'N/A'}</p>
-                    <p>🕒 ${item.horario}</p>
-                    <p>📅 ${item.data}</p>
+            <div class="${classe}">
+                <div class="detalhe-header">
+                    <span>
+                        📍 ${payload?.local || 'N/A'}
+                    </span>
+
+                    <span class="detalhe-temperatura">
+                        🌡️ ${payload?.temp ?? '--'}°C
+                    </span>
                 </div>
-                <br>
-            `;
+
+                <div class="detalhe-alerta">
+                    <span>Estado</span>
+                    <strong>
+                        ${payload?.alerta || 'N/A'}
+                    </strong>
+                </div>
+
+                <div class="detalhe-data">
+                    <span>🕒 ${item.horario}</span>
+                    <span>📅 ${item.data}</span>
+                </div>
+            </div>
+        `;
     });
 
     detalheBox.innerHTML = `
-            <h3>${nomeFormatado}</h3>
-            <br>
-            ${historicoHtml}
-        `;
+        <h3>${nomeFormatado}</h3>
+        <br>
+        ${historicoHtml || '<p>Nenhuma leitura registrada.</p>'}
+    `;
 }
