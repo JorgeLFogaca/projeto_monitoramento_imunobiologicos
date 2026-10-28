@@ -50,17 +50,16 @@ socket.on('mqttData', (data) => {
     sensores[id].data = data.data;
 
     // Guarda no histórico apenas as leituras de temperatura
-    if (data.tipoDado === 'temp') {
-        sensores[id].historico.unshift({
-            payload: { ...payload },
-            horario: data.horario,
-            data: data.data
-        });
+    if (data.tipoDado === 'temp' || data.tipoDado === 'status') {
+    sensores[id].historico.unshift({
+        payload: { ...payload },
+        horario: data.horario,
+        data: data.data
+    });
 
-        // Limita o histórico a 10 registros
-        sensores[id].historico =
-            sensores[id].historico.slice(0, 10);
-    }
+    sensores[id].historico =
+        sensores[id].historico.slice(0, 10);
+}
 
     renderizarSensores();
 
@@ -105,6 +104,7 @@ function renderizarSensores() {
             .toUpperCase();
 
         card.innerHTML = `
+            <h2>📡 ${nomeFormatado}</h2>
             <div>
                 <h2>📍 Local: ${payload?.local || 'N/A'}</h2>
             </div>
@@ -165,7 +165,6 @@ function mostrarDetalhes(id) {
     });
 
     detalheBox.innerHTML = `
-        <h3>${nomeFormatado}</h3>
         <br>
         ${historicoHtml || '<p>Nenhuma leitura registrada.</p>'}
     `;

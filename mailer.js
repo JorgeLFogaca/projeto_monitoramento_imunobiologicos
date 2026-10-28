@@ -1,44 +1,29 @@
+
+require('dotenv').config();
+
 const nodemailer = require('nodemailer');
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD
+    }
+});
+
 async function sendAlertEmail(assunto, mensagem) {
-
-    const transporter = nodemailer.createTransport({
-
-        service: 'gmail',
-
-        auth: {
-            user: 'trabalhoiot0@gmail.com',
-            pass: 'eirbwabijsnizbth'
-        }
-    });
-
     try {
-
         const info = await transporter.sendMail({
-
-            from: '"Monitor de Vacinas" <trabalhoiot0@gmail.com>',
-
-            to: 'jorgelf007@gmail.com',
-
+            from: `"Monitor de Vacinas" <${process.env.GMAIL_USER}>`,
+            to: process.env.ALERT_EMAIL,
             subject: assunto,
-
             text: mensagem,
-
             html: `
                 <div style="font-family: Arial; padding:20px;">
-
-                    <h2 style="color:red;">
-                        🚨 ALERTA CRÍTICO
-                    </h2>
-
+                    <h2 style="color:red;">🚨 ALERTA CRÍTICO</h2>
                     <p>${mensagem}</p>
-
                     <hr>
-
-                    <p>
-                        Sistema de Monitoramento de Vacinas
-                    </p>
-
+                    <p>Sistema de Monitoramento de Vacinas</p>
                 </div>
             `
         });
@@ -46,10 +31,10 @@ async function sendAlertEmail(assunto, mensagem) {
         console.log('📧 Email enviado!');
         console.log(info.response);
 
+        return info;
     } catch (erro) {
-
-        console.log('❌ Erro ao enviar email');
-        console.log(erro);
+        console.error('❌ Erro ao enviar email:', erro.message);
+        throw erro;
     }
 }
 
